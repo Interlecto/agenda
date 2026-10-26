@@ -1,0 +1,9 @@
+# Copy this file to local.properties (gitignored) and fill in real values.
+# local.properties is per-machine / per-developer and must never be committed.
+
+sdk.dir=/path/to/Android/Sdk
+
+# Phase 1 (feature:auth) will read these via BuildConfig fields once wired up.
+GOOGLE_OAUTH_CLIENT_ID=
+MSAL_CLIENT_ID=
+MSAL_REDIRECT_URI=

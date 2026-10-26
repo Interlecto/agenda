@@ -1,0 +1,8 @@
+<resources>
+    <!-- Compose sets the real theme via AgendaTheme; this only needs to cover the
+         brief window before the first Compose frame draws (window background, status bar). -->
+    <style name="Theme.Agenda" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/launcher_background</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>
