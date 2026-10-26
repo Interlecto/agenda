@@ -3,7 +3,13 @@
 
 sdk.dir=/path/to/Android/Sdk
 
-# Phase 1 (feature:auth) will read these via BuildConfig fields once wired up.
+# Phase 1 (core:network/auth). See docs/SETUP_OAUTH.md for exact setup steps.
+#
+# This must be the *Web application* OAuth client ID, not the Android one — Credential
+# Manager's GetGoogleIdOption.setServerClientId always expects a Web client ID, even for a
+# pure Android app with no backend. The separate Android OAuth client (package name + debug
+# SHA-1) that Google Calendar's Authorization API needs is registered in Cloud Console too,
+# but its ID never appears in code.
 GOOGLE_OAUTH_CLIENT_ID=
 MSAL_CLIENT_ID=
 MSAL_REDIRECT_URI=

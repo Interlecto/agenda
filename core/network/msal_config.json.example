@@ -1,0 +1,15 @@
+{
+  "client_id": "YOUR_MSAL_CLIENT_ID_HERE",
+  "redirect_uri": "YOUR_MSAL_REDIRECT_URI_HERE",
+  "broker_redirect_uri_registered": false,
+  "account_mode": "MULTIPLE",
+  "authorities": [
+    {
+      "type": "AAD",
+      "audience": {
+        "type": "AzureADandPersonalMicrosoftAccount"
+      },
+      "default": true
+    }
+  ]
+}

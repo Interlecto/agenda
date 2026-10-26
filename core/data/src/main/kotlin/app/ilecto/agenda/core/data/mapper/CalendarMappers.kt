@@ -12,6 +12,7 @@ fun CalendarAccountEntity.toDomain() = CalendarAccount(
     emailAddress = emailAddress,
     isCorporate = isCorporate,
     colorArgb = colorArgb,
+    authRef = authRef,
 )
 
 fun CalendarAccount.toEntity() = CalendarAccountEntity(
@@ -21,6 +22,7 @@ fun CalendarAccount.toEntity() = CalendarAccountEntity(
     emailAddress = emailAddress,
     isCorporate = isCorporate,
     colorArgb = colorArgb,
+    authRef = authRef,
 )
 
 fun CalendarEventEntity.toDomain() = CalendarEvent(

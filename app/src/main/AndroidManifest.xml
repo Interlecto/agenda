@@ -16,5 +16,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            MSAL's redirect activity: catches the browser callback after an interactive
+            Outlook sign-in. android:path must be the same base64 signature hash as
+            MSAL_REDIRECT_URI in local.properties (see docs/SETUP_OAUTH.md) — the value below
+            is this machine's debug keystore; a release build needs its own.
+        -->
+        <activity
+            android:name="com.microsoft.identity.client.BrowserTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="msauth"
+                    android:host="app.ilecto.agenda"
+                    android:path="/6jjzlT%2FBmcMqbPzvRP7URPe%2F%2FdI%3D" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

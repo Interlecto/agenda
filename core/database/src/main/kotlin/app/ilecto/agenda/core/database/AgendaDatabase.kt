@@ -10,9 +10,13 @@ import app.ilecto.agenda.core.database.entity.CalendarEventEntity
 
 // Phase 4/5/6 will add Task, Project and ActivityLogEntry entities + DAOs here,
 // each with its own migration, once those features are actually built.
+//
+// v1 -> v2 (Phase 1): added CalendarAccountEntity.authRef. Nothing has shipped yet, so this
+// uses a destructive fallback (see DatabaseModule) instead of a throwaway Migration for a
+// schema that's still in flux pre-release.
 @Database(
     entities = [CalendarAccountEntity::class, CalendarEventEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)

@@ -3,6 +3,9 @@
 .wrangler/
 node_modules/
 /local.properties
+# Real MSAL config (client_id/redirect_uri are per-developer, like local.properties).
+# A placeholder .example is tracked instead; see docs/SETUP_OAUTH.md.
+/core/network/src/main/res/raw/msal_config.json
 .idea/
 .DS_Store
 /build/

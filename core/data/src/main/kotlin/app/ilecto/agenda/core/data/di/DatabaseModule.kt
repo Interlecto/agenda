@@ -19,7 +19,11 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAgendaDatabase(@ApplicationContext context: Context): AgendaDatabase =
-        Room.databaseBuilder(context, AgendaDatabase::class.java, AgendaDatabase.DATABASE_NAME).build()
+        Room.databaseBuilder(context, AgendaDatabase::class.java, AgendaDatabase.DATABASE_NAME)
+            // Pre-release, no user data to preserve across schema changes yet — see
+            // AgendaDatabase's v1 -> v2 note.
+            .fallbackToDestructiveMigration(true)
+            .build()
 
     @Provides
     fun provideCalendarAccountDao(database: AgendaDatabase): CalendarAccountDao =

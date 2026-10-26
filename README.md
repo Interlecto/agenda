@@ -24,9 +24,11 @@ MVP desirable: blocking.
 
 ## Project status
 
-Phase 0 (project skeleton) is in place: a multi-module Android app (Kotlin, Jetpack Compose, Hilt,
-Room, single Activity) that builds and launches to placeholder screens. No feature is functionally
-implemented yet.
+Phase 0 (project skeleton) is done. Phase 1 (MVP: unified read-only view) is implemented —
+Google (Credential Manager + Play Services Authorization API) and Outlook (MSAL, personal +
+work/school accounts) sign-in, real Google Calendar / Microsoft Graph API calls, a local Room
+cache, and a merged color-coded agenda view — but untested against real OAuth credentials: see
+**[docs/SETUP_OAUTH.md](docs/SETUP_OAUTH.md)** to fill those in and actually try it.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full phase-by-phase plan and architecture notes.
 
@@ -55,8 +57,10 @@ ios/                 iOS port placeholder (Phase 8)
 
 ## Getting started
 
-1. Copy `local.properties.example` to `local.properties` and set `sdk.dir` to your Android SDK path
-   (OAuth client IDs can stay blank until Phase 1).
+1. Copy `local.properties.example` to `local.properties` and set `sdk.dir` to your Android SDK path.
+   The app builds and runs without OAuth credentials filled in — see
+   **[docs/SETUP_OAUTH.md](docs/SETUP_OAUTH.md)** for how to get a real Google/Outlook sign-in
+   working (Phase 1).
 2. `./gradlew assembleDebug` to build, or open the project root in Android Studio.
 3. Dependency versions in `gradle/libs.versions.toml` were checked live against Maven/Google
    metadata on 2026-10-26 (not just the assistant's training data) — still worth a refresh if

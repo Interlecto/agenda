@@ -12,4 +12,7 @@ data class CalendarAccountEntity(
     val emailAddress: String,
     val isCorporate: Boolean,
     val colorArgb: Int,
+    // Google: the signed-in account's email, used to re-request the Calendar scope later.
+    // Outlook: MSAL's homeAccountId, used with acquireTokenSilent/getAccount later.
+    val authRef: String,
 )
