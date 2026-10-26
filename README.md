@@ -30,6 +30,8 @@ implemented yet.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full phase-by-phase plan and architecture notes.
 
+A landing page is live at **[agenda.ilecto.app](https://agenda.ilecto.app)** ([source](site/)).
+
 ## Project structure
 
 ```

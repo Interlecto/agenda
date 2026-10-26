@@ -1,0 +1,13 @@
+{
+  "name": "agenda-site",
+  "compatibility_date": "2026-10-26",
+  // Static site only: ilecto.app belongs to the separate ilecto-site Worker
+  "assets": {
+    "directory": "./public"
+  },
+  "routes": [
+    { "pattern": "agenda.ilecto.app", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  "preview_urls": false
+}
