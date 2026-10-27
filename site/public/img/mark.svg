@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="190 90 440 270" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="gridCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+    <linearGradient id="gridMagenta" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="syncBeam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="50%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F43F5E" />
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#000000" flood-opacity="0.55" />
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <!-- Source A calendar -->
+    <g transform="translate(290, 125)">
+      <rect x="0" y="0" width="160" height="170" rx="20" fill="#0F172A" stroke="url(#gridCyan)" stroke-width="3" opacity="0.9" />
+      <path d="M 0 20 Q 0 0 20 0 L 140 0 Q 160 0 160 20 L 160 45 L 0 45 Z" fill="url(#gridCyan)" opacity="0.25" />
+      <rect x="40" y="-10" width="12" height="18" rx="6" fill="#38BDF8" />
+      <rect x="108" y="-10" width="12" height="18" rx="6" fill="#38BDF8" />
+      <rect x="20" y="65" width="28" height="26" rx="6" fill="#38BDF8" opacity="0.2" />
+      <rect x="66" y="65" width="28" height="26" rx="6" fill="#38BDF8" opacity="0.8" />
+      <rect x="112" y="65" width="28" height="26" rx="6" fill="#38BDF8" opacity="0.2" />
+      <rect x="20" y="105" width="28" height="26" rx="6" fill="#38BDF8" opacity="0.2" />
+      <rect x="66" y="105" width="28" height="26" rx="6" fill="#38BDF8" opacity="0.2" />
+      <rect x="112" y="105" width="28" height="26" rx="6" fill="#38BDF8" opacity="0.5" />
+    </g>
+
+    <!-- Source B calendar -->
+    <g transform="translate(350, 165)" filter="url(#glow)">
+      <rect x="0" y="0" width="160" height="170" rx="20" fill="#1E1B4B" stroke="url(#gridMagenta)" stroke-width="3" opacity="0.95" />
+      <path d="M 0 20 Q 0 0 20 0 L 140 0 Q 160 0 160 20 L 160 45 L 0 45 Z" fill="url(#gridMagenta)" opacity="0.3" />
+      <rect x="40" y="-10" width="12" height="18" rx="6" fill="#F43F5E" />
+      <rect x="108" y="-10" width="12" height="18" rx="6" fill="#F43F5E" />
+      <rect x="20" y="65" width="28" height="26" rx="6" fill="#F43F5E" opacity="0.3" />
+      <rect x="66" y="65" width="28" height="26" rx="6" fill="#F43F5E" opacity="0.95" />
+      <rect x="112" y="65" width="28" height="26" rx="6" fill="#F43F5E" opacity="0.3" />
+      <rect x="20" y="105" width="28" height="26" rx="6" fill="#F43F5E" opacity="0.3" />
+      <rect x="66" y="105" width="28" height="26" rx="6" fill="#F43F5E" opacity="0.6" />
+      <rect x="112" y="105" width="28" height="26" rx="6" fill="#F43F5E" opacity="0.3" />
+    </g>
+
+    <!-- Sync bridge -->
+    <g transform="translate(400, 225)">
+      <circle cx="0" cy="0" r="42" fill="#0B0F19" stroke="url(#syncBeam)" stroke-width="4" filter="url(#glow)" />
+      <path d="M -18,-10 C -18,-24 18,-24 18,-10" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" />
+      <path d="M 12,-16 L 22,-10 L 12,-4" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M 18,10 C 18,24 -18,24 -18,10" fill="none" stroke="#F43F5E" stroke-width="5" stroke-linecap="round" />
+      <path d="M -12,16 L -22,10 L -12,4" fill="none" stroke="#F43F5E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="0" cy="0" r="8" fill="#FFFFFF" filter="url(#glow)" />
+    </g>
+
+    <!-- Floating live sync beams -->
+    <g stroke-linecap="round" stroke-width="3" opacity="0.7">
+      <line x1="240" y1="185" x2="280" y2="185" stroke="#38BDF8" />
+      <circle cx="235" cy="185" r="3" fill="#38BDF8" />
+      <line x1="520" y1="265" x2="560" y2="265" stroke="#F43F5E" />
+      <circle cx="565" cy="265" r="3" fill="#F43F5E" />
+    </g>
+  </g>
+</svg>

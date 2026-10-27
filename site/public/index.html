@@ -7,7 +7,8 @@
   <meta name="description" content="App Android para unificar tus calendarios de Google y Outlook, personales y corporativos, en una sola vista, con bloqueo automático entre ellos.">
   <link rel="alternate" hreflang="es" href="https://agenda.ilecto.app/">
   <link rel="alternate" hreflang="en" href="https://agenda.ilecto.app/en/">
-  <link rel="icon" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/img/favicon.png">
   <meta property="og:title" content="Agenda">
   <meta property="og:description" content="Un solo calendario para Google y Outlook, personal y corporativo.">
   <meta property="og:image" content="https://agenda.ilecto.app/img/favicon.png">
@@ -17,9 +18,10 @@
   <header class="hero">
     <nav class="top"><a href="/en/" hreflang="en" lang="en">English</a></nav>
     <div class="hero-inner">
+      <img class="hero-mark" src="/img/mark.svg" alt="" width="360" height="221">
       <h1>Agenda</h1>
       <p class="tagline">Un solo calendario para Google y Outlook, personal y corporativo.</p>
-      <span class="badge">En desarrollo activo — aún no disponible</span>
+      <span class="badge">Fase 1 en pruebas — aún no publicada</span>
     </div>
   </header>
 
@@ -37,10 +39,10 @@
           <h3>Esqueleto del proyecto</h3>
           <p>Arquitectura Android multi-módulo (Kotlin, Compose, Hilt, Room) ya en marcha, publicada en GitHub.</p>
         </li>
-        <li>
-          <span class="phase-tag">Fase 1 · MVP</span>
+        <li class="building">
+          <span class="phase-tag">Fase 1 · construida, en pruebas</span>
           <h3>Vista unificada</h3>
-          <p>Inicia sesión en al menos una cuenta de Google y una de Outlook (personal y corporativa a la vez) y ve todos tus eventos en un solo calendario.</p>
+          <p>El inicio de sesión con Google y Outlook (personal y corporativa a la vez), la sincronización real de calendarios y la vista unificada ya están implementados y compilan correctamente — ahora en pruebas con cuentas reales.</p>
         </li>
         <li>
           <span class="phase-tag">Fase 2</span>
@@ -69,7 +71,7 @@
       <h2>Hoja de ruta</h2>
       <ul class="timeline">
         <li><span class="when done">Fase 0</span><span>Esqueleto del proyecto y arquitectura multi-módulo</span></li>
-        <li><span class="when">Fase 1</span><span>MVP: vista unificada de Google + Outlook</span></li>
+        <li><span class="when building">Fase 1</span><span>MVP: vista unificada de Google + Outlook — construida, en pruebas</span></li>
         <li><span class="when">Fase 2</span><span>Bloqueo automático entre calendarios</span></li>
         <li><span class="when">Fase 3–6</span><span>Eventos desde el correo, planificador, registro de actividad y reportes</span></li>
         <li><span class="when">Más adelante</span><span>Versión para iOS</span></li>
