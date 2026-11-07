@@ -29,4 +29,7 @@ data class CalendarEventEntity(
     val end: Instant,
     val isAllDay: Boolean,
     val mirroredFromEventId: String?,
+    // Phase 2: which SyncRule produced this mirror, so reconciliation scopes itself to one
+    // rule's own mirrors even if two rules happen to target the same calendar.
+    val mirroredByRuleId: String?,
 )

@@ -21,7 +21,11 @@ import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-private val CALENDAR_READ_SCOPE = arrayOf("Calendars.Read")
+// Phase 2: the sync engine needs to create/update/delete the redacted "busy" blocks it mirrors
+// onto a target Outlook calendar, so this supersedes the Phase 1 read-only scope outright
+// (Calendars.ReadWrite is a superset — Graph has no separate "events-only write" scope the way
+// Google does).
+private val CALENDAR_READ_WRITE_SCOPE = arrayOf("Calendars.ReadWrite")
 
 data class MsalIdentity(val homeAccountId: String, val username: String)
 
@@ -50,7 +54,7 @@ class OutlookAuthManager @Inject constructor(
         val result = suspendCancellableCoroutine<IAuthenticationResult> { continuation ->
             val parameters = AcquireTokenParameters.Builder()
                 .startAuthorizationFromActivity(activity)
-                .withScopes(CALENDAR_READ_SCOPE.toList())
+                .withScopes(CALENDAR_READ_WRITE_SCOPE.toList())
                 .withCallback(object : AuthenticationCallback {
                     override fun onSuccess(authenticationResult: IAuthenticationResult) {
                         continuation.resume(authenticationResult)
@@ -82,7 +86,7 @@ class OutlookAuthManager @Inject constructor(
                 val authority = app.configuration.defaultAuthority.authorityURL.toString()
                 val parameters = AcquireTokenSilentParameters.Builder()
                     .forAccount(account)
-                    .withScopes(CALENDAR_READ_SCOPE.toList())
+                    .withScopes(CALENDAR_READ_WRITE_SCOPE.toList())
                     .fromAuthority(authority)
                     .build()
                 val result = app.acquireTokenSilent(parameters)

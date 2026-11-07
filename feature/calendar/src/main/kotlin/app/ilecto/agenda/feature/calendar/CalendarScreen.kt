@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -34,7 +35,11 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @Composable
-fun CalendarRoute(modifier: Modifier = Modifier, viewModel: CalendarViewModel = hiltViewModel()) {
+fun CalendarRoute(
+    onOpenSyncRules: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CalendarViewModel = hiltViewModel(),
+) {
     val events by viewModel.events.collectAsStateWithLifecycle()
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
@@ -57,6 +62,7 @@ fun CalendarRoute(modifier: Modifier = Modifier, viewModel: CalendarViewModel = 
         errorMessage = errorMessage,
         onRefresh = { activity?.let(viewModel::refresh) },
         onDismissError = viewModel::dismissError,
+        onOpenSyncRules = onOpenSyncRules,
         modifier = modifier,
     )
 }
@@ -69,6 +75,7 @@ private fun CalendarScreen(
     errorMessage: String?,
     onRefresh: () -> Unit,
     onDismissError: () -> Unit,
+    onOpenSyncRules: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val accountsById = remember(accounts) { accounts.associateBy { it.id } }
@@ -84,8 +91,11 @@ private fun CalendarScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = "Agenda", style = MaterialTheme.typography.headlineSmall)
-            OutlinedButton(onClick = onRefresh, enabled = !isRefreshing) {
-                Text(if (isRefreshing) "Refreshing…" else "Refresh")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = onOpenSyncRules) { Text("Sync rules") }
+                OutlinedButton(onClick = onRefresh, enabled = !isRefreshing) {
+                    Text(if (isRefreshing) "Refreshing…" else "Refresh")
+                }
             }
         }
 

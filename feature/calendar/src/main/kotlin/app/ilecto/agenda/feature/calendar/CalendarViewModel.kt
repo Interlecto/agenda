@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import app.ilecto.agenda.core.common.AppResult
 import app.ilecto.agenda.core.domain.repository.AccountRepository
 import app.ilecto.agenda.core.domain.usecase.GetUnifiedEventsUseCase
-import app.ilecto.agenda.core.domain.usecase.RefreshCalendarUseCase
+import app.ilecto.agenda.core.domain.usecase.SyncAgendaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class CalendarViewModel @Inject constructor(
     getUnifiedEvents: GetUnifiedEventsUseCase,
     accountRepository: AccountRepository,
-    private val refreshCalendar: RefreshCalendarUseCase,
+    private val syncAgenda: SyncAgendaUseCase,
 ) : ViewModel() {
 
     // Phase 1 TODO: drive the visible date range from the UI (day/week/agenda
@@ -50,7 +50,10 @@ class CalendarViewModel @Inject constructor(
         if (_isRefreshing.value) return
         viewModelScope.launch {
             _isRefreshing.value = true
-            when (val result = refreshCalendar(context)) {
+            // Phase 2: a pull-to-refresh now also reconciles sync rules, not just re-fetches
+            // events, so a rule change (new/edited/deleted) takes effect immediately instead of
+            // waiting for the next 15-minute background pass.
+            when (val result = syncAgenda(context)) {
                 is AppResult.Success -> _errorMessage.value = null
                 is AppResult.Error -> _errorMessage.value = result.throwable.message ?: "Could not refresh calendar"
             }

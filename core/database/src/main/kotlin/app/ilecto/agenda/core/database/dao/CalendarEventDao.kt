@@ -18,4 +18,26 @@ interface CalendarEventDao {
 
     @Query("DELETE FROM calendar_events WHERE accountId = :accountId")
     suspend fun deleteForAccount(accountId: String)
+
+    @Query("DELETE FROM calendar_events WHERE id = :eventId")
+    suspend fun deleteById(eventId: String)
+
+    /**
+     * Events a sync rule may treat as a *source*. Always excludes the app's own mirrored events
+     * ([CalendarEventEntity.mirroredFromEventId] not null) — this is the one place that
+     * invariant is enforced, so an event Agenda itself created can never be re-mirrored
+     * elsewhere.
+     */
+    @Query(
+        "SELECT * FROM calendar_events WHERE accountId = :accountId AND calendarId = :calendarId " +
+            "AND mirroredFromEventId IS NULL",
+    )
+    suspend fun getSourceCandidates(accountId: String, calendarId: String): List<CalendarEventEntity>
+
+    /** The app's own mirrored events currently cached for one target account/calendar. */
+    @Query(
+        "SELECT * FROM calendar_events WHERE accountId = :accountId AND calendarId = :calendarId " +
+            "AND mirroredFromEventId IS NOT NULL",
+    )
+    suspend fun getMirrorsForTarget(accountId: String, calendarId: String): List<CalendarEventEntity>
 }

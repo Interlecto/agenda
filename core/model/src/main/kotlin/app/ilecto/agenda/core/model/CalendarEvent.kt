@@ -18,4 +18,5 @@ data class CalendarEvent(
     val end: Instant,
     val isAllDay: Boolean,
     val mirroredFromEventId: String?,
+    val mirroredByRuleId: String?,
 )

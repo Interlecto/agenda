@@ -4,9 +4,12 @@ import android.content.Context
 import app.ilecto.agenda.core.common.AppResult
 import app.ilecto.agenda.core.data.mapper.toDomain
 import app.ilecto.agenda.core.data.mapper.toEntity
+import app.ilecto.agenda.core.database.dao.AccountCalendarDao
 import app.ilecto.agenda.core.database.dao.CalendarAccountDao
 import app.ilecto.agenda.core.database.dao.CalendarEventDao
+import app.ilecto.agenda.core.database.entity.AccountCalendarEntity
 import app.ilecto.agenda.core.database.entity.CalendarAccountEntity
+import app.ilecto.agenda.core.database.entity.CalendarEventEntity
 import app.ilecto.agenda.core.domain.repository.CalendarRepository
 import app.ilecto.agenda.core.model.CalendarEvent
 import app.ilecto.agenda.core.model.CalendarProvider
@@ -27,6 +30,7 @@ private val REFRESH_WINDOW = Duration.ofDays(30)
 class CalendarRepositoryImpl @Inject constructor(
     private val accountDao: CalendarAccountDao,
     private val eventDao: CalendarEventDao,
+    private val accountCalendarDao: AccountCalendarDao,
     private val tokenProviderFactory: TokenProviderFactory,
     private val googleCalendarApi: GoogleCalendarApi,
     private val outlookGraphApi: OutlookGraphApi,
@@ -69,41 +73,59 @@ class CalendarRepositoryImpl @Inject constructor(
         }
         val authorization = "Bearer $token"
 
-        val events = when (accountEntity.provider) {
-            CalendarProvider.GOOGLE -> fetchGoogleEvents(authorization, accountEntity.id, from, to)
-            CalendarProvider.OUTLOOK -> fetchOutlookEvents(authorization, accountEntity.id, from, to)
+        val (calendars, events) = when (accountEntity.provider) {
+            CalendarProvider.GOOGLE -> fetchGoogle(authorization, accountEntity.id, from, to)
+            CalendarProvider.OUTLOOK -> fetchOutlook(authorization, accountEntity.id, from, to)
         }
 
+        // Phase 2: also cache the account's own calendar list (previously fetched and
+        // discarded) so the sync-rule editor can show real calendar names.
+        accountCalendarDao.deleteForAccount(accountEntity.id)
+        accountCalendarDao.upsertAll(calendars)
         eventDao.deleteForAccount(accountEntity.id)
         eventDao.upsertAll(events)
     }
 
-    private suspend fun fetchGoogleEvents(
+    private suspend fun fetchGoogle(
         authorization: String,
         accountId: String,
         from: Instant,
         to: Instant,
-    ) = googleCalendarApi.listCalendars(authorization).items.flatMap { calendar ->
-        googleCalendarApi.listEvents(
-            authorization = authorization,
-            calendarId = calendar.id,
-            timeMin = from.toString(),
-            timeMax = to.toString(),
-        ).items.mapNotNull { it.toEntity(accountId = accountId, calendarId = calendar.id) }
+    ): Pair<List<AccountCalendarEntity>, List<CalendarEventEntity>> {
+        val calendarList = googleCalendarApi.listCalendars(authorization).items
+        val calendars = calendarList.map {
+            AccountCalendarEntity(accountId = accountId, calendarId = it.id, displayName = it.summary ?: it.id)
+        }
+        val events = calendarList.flatMap { calendar ->
+            googleCalendarApi.listEvents(
+                authorization = authorization,
+                calendarId = calendar.id,
+                timeMin = from.toString(),
+                timeMax = to.toString(),
+            ).items.mapNotNull { it.toEntity(accountId = accountId, calendarId = calendar.id) }
+        }
+        return calendars to events
     }
 
-    private suspend fun fetchOutlookEvents(
+    private suspend fun fetchOutlook(
         authorization: String,
         accountId: String,
         from: Instant,
         to: Instant,
-    ) = outlookGraphApi.listCalendars(authorization).value.flatMap { calendar ->
-        outlookGraphApi.listEvents(
-            authorization = authorization,
-            calendarId = calendar.id,
-            startDateTime = GRAPH_DATE_TIME_FORMAT.format(from),
-            endDateTime = GRAPH_DATE_TIME_FORMAT.format(to),
-        ).value.mapNotNull { it.toEntity(accountId = accountId, calendarId = calendar.id) }
+    ): Pair<List<AccountCalendarEntity>, List<CalendarEventEntity>> {
+        val calendarList = outlookGraphApi.listCalendars(authorization).value
+        val calendars = calendarList.map {
+            AccountCalendarEntity(accountId = accountId, calendarId = it.id, displayName = it.name ?: it.id)
+        }
+        val events = calendarList.flatMap { calendar ->
+            outlookGraphApi.listEvents(
+                authorization = authorization,
+                calendarId = calendar.id,
+                startDateTime = GRAPH_DATE_TIME_FORMAT.format(from),
+                endDateTime = GRAPH_DATE_TIME_FORMAT.format(to),
+            ).value.mapNotNull { it.toEntity(accountId = accountId, calendarId = calendar.id) }
+        }
+        return calendars to events
     }
 
     companion object {

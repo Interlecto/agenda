@@ -3,8 +3,10 @@ package app.ilecto.agenda.core.data.di
 import android.content.Context
 import androidx.room.Room
 import app.ilecto.agenda.core.database.AgendaDatabase
+import app.ilecto.agenda.core.database.dao.AccountCalendarDao
 import app.ilecto.agenda.core.database.dao.CalendarAccountDao
 import app.ilecto.agenda.core.database.dao.CalendarEventDao
+import app.ilecto.agenda.core.database.dao.SyncRuleDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,4 +34,12 @@ object DatabaseModule {
     @Provides
     fun provideCalendarEventDao(database: AgendaDatabase): CalendarEventDao =
         database.calendarEventDao()
+
+    @Provides
+    fun provideSyncRuleDao(database: AgendaDatabase): SyncRuleDao =
+        database.syncRuleDao()
+
+    @Provides
+    fun provideAccountCalendarDao(database: AgendaDatabase): AccountCalendarDao =
+        database.accountCalendarDao()
 }

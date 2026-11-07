@@ -27,6 +27,12 @@ data class GoogleIdentity(val email: String, val displayName: String)
 
 private val CALENDAR_READONLY_SCOPE = Scope("https://www.googleapis.com/auth/calendar.readonly")
 
+// Phase 2: write access for the synthetic "busy" blocks the sync engine creates. Kept as a
+// second, narrower scope alongside the readonly one (least-privilege) rather than switching to
+// the broad https://www.googleapis.com/auth/calendar scope, which would also grant calendar
+// creation/deletion we never need.
+private val CALENDAR_EVENTS_SCOPE = Scope("https://www.googleapis.com/auth/calendar.events")
+
 /**
  * Wraps Credential Manager (identity/sign-in) and the Play Services Authorization API
  * (Calendar scope access) — two separate Google APIs with two separate OAuth client
@@ -73,7 +79,7 @@ class GoogleAuthManager @Inject constructor() {
         launchConsent: suspend (IntentSenderRequest) -> Intent?,
     ): AppResult<String> = try {
         val request = AuthorizationRequest.builder()
-            .setRequestedScopes(listOf(CALENDAR_READONLY_SCOPE))
+            .setRequestedScopes(listOf(CALENDAR_READONLY_SCOPE, CALENDAR_EVENTS_SCOPE))
             .build()
         var result = Identity.getAuthorizationClient(context).authorize(request).await()
         if (result.hasResolution()) {

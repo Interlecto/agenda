@@ -20,6 +20,7 @@ hiltAndroid = "2.60.1"
 hiltNavigationCompose = "1.4.0"
 room = "2.8.5"
 workManager = "2.12.0"
+androidxHiltWork = "1.4.0" # androidx.hilt:hilt-work / hilt-compiler — verified live 2026-10-27
 coroutines = "1.11.0"
 serializationJson = "1.11.0"
 retrofit = "2.12.0"
@@ -62,6 +63,8 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidxHiltWork" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltWork" }
 
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }

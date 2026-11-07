@@ -56,7 +56,10 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:common"))
 
-    implementation(libs.retrofit.core)
+    // api, not implementation: GoogleCalendarApi/OutlookGraphApi's delete endpoints return
+    // retrofit2.Response<Unit> directly (to dodge the 204-empty-body JSON-parsing problem),
+    // so core:data needs retrofit2.Response on its own compile classpath too.
+    api(libs.retrofit.core)
     implementation(libs.retrofit.kotlinx.serialization.converter)
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging.interceptor)

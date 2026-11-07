@@ -1,4 +1,4 @@
-# Setting up OAuth credentials (Phase 1)
+# Setting up OAuth credentials (Phase 1 + Phase 2)
 
 Agenda talks to Google Calendar and Microsoft Graph directly from the device — there is no
 backend. Both require an app registration that only you can create (they're tied to your own
@@ -35,6 +35,12 @@ API). This is a genuine Google quirk, not a mistake: the client *type* each API 
    Android app with no backend of its own.
 5. You'll also need an **OAuth consent screen** configured (External is fine while testing;
    add your own Google account as a test user if the app is in "Testing" publishing status).
+   Calendar scopes are "restricted/sensitive," so Google also requires you to explicitly add
+   both scopes under the consent screen's **Data access → Add or remove scopes** step, even
+   while the app is in Testing: `.../auth/calendar.readonly` (Phase 1, read) and
+   `.../auth/calendar.events` (Phase 2, write — lets the sync engine create the redacted "busy"
+   blocks on a target calendar) — otherwise `AuthorizationClient` will fail to grant them to
+   your test account.
 6. Copy the **Web** client's ID (looks like `1234567890-abc123.apps.googleusercontent.com`)
    into `local.properties`:
    ```
@@ -53,8 +59,10 @@ API). This is a genuine Google quirk, not a mistake: the client *type* each API 
    can directly add) the custom-scheme redirect URI above:
    `msauth://app.ilecto.agenda/6jjzlT%2FBmcMqbPzvRP7URPe%2F%2FdI%3D`.
 4. **API permissions → Add a permission → Microsoft Graph → Delegated permissions** → add
-   `Calendars.Read`. Grant admin consent if your tenant requires it (personal/consumer sign-in
-   doesn't need this step).
+   `Calendars.ReadWrite` (Phase 2's sync engine needs write access to create/update/delete the
+   redacted "busy" blocks it mirrors onto a target calendar; this supersedes the Phase 1
+   `Calendars.Read` permission — remove the old one if you added it separately). Grant admin
+   consent if your tenant requires it (personal/consumer sign-in doesn't need this step).
 5. Copy the **Application (client) ID** from the registration's Overview page into
    `local.properties`:
    ```
@@ -74,3 +82,11 @@ API). This is a genuine Google quirk, not a mistake: the client *type* each API 
 
 No other code changes are needed — `core:network`'s `BuildConfig` and `msal_config.json` are
 read at runtime.
+
+## If you already linked a test account under Phase 1
+
+Phase 2 widens both providers' requested scopes (Google adds `calendar.events`; Outlook's
+`Calendars.Read` becomes `Calendars.ReadWrite`). An account linked before this change only
+holds the old, narrower grant. **Unlink and relink it** from the app's account list — that
+re-runs the consent flow and picks up the new scope. Leaving it linked will surface as a "please
+reconnect this account" error the next time the sync engine or a refresh needs a token for it.

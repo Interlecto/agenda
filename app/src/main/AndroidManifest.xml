@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:name=".AgendaApplication"
@@ -36,5 +37,21 @@
                     android:path="/6jjzlT%2FBmcMqbPzvRP7URPe%2F%2FdI%3D" />
             </intent-filter>
         </activity>
+
+        <!--
+            Phase 2: WorkManager is Hilt-injected (see AgendaApplication's Configuration.Provider),
+            so its default androidx.startup auto-initializer must be disabled — otherwise it
+            races to initialize WorkManager with a plain Configuration before Hilt's is applied.
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 </manifest>
