@@ -2,6 +2,8 @@
 
 Agenda Unificada: an Android app (Kotlin, Jetpack Compose) that connects to several calendar services (Google Calendar, Outlook) and shows one unified view. It can sync or send blocks between calendars, e.g. mark a personal appointment on a work calendar as a generic out-of-office event without details. See `README.md` for goals and `ROADMAP.md` for planned work.
 
+Rules shared by all Interlecto projects (branches, debug keystore, deployment, Google Play, visual identity, how to continue from another machine or account) are in the hub's [CLAUDE.md](https://github.com/Interlecto/ilecto/blob/master/CLAUDE.md). Where they differ, this file wins.
+
 ## Layout
 
 - `app/` — Android application module (Kotlin sources under `app/src/main/kotlin/app`).
