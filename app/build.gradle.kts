@@ -18,6 +18,17 @@ android {
         versionName = "0.1.0"
     }
 
+    // Shared debug key so builds from any machine can update the app on a test device without
+    // wiping its data. Its SHA-1 is the one registered for OAuth in docs/SETUP_OAUTH.md.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false

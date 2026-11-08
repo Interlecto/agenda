@@ -6,8 +6,9 @@ Google Cloud / Microsoft Entra accounts). This page is the exact steps; the app 
 without these (you'll just get a sign-in error when you tap "Add Google/Outlook account" until
 you fill them in).
 
-Your debug keystore's signature (`~/.android/debug.keystore`, the default Android Studio/Gradle
-debug key) is already resolved below, so you don't need to run `keytool` yourself:
+Debug builds are signed with the shared `keystore/debug.keystore` in this repo (standard debug
+values, wired up in `app/build.gradle.kts`), so the signature is the same on every machine. It
+is already resolved below, so you don't need to run `keytool` yourself:
 
 - **SHA-1:** `EA:38:F3:95:3F:C1:99:C3:2A:6C:FC:EF:44:FE:D4:44:F7:BF:FD:D2`
 - **MSAL redirect URI (debug):** `msauth://app.ilecto.agenda/6jjzlT%2FBmcMqbPzvRP7URPe%2F%2FdI%3D`
