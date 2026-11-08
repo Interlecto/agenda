@@ -61,6 +61,16 @@ fun buildGoogleMirrorWrite(
     ),
 )
 
+/**
+ * Phase 3: a plain, unmarked event for the mail-suggestion accept flow — a real user-visible
+ * event, not a Phase 2 mirror, so it carries neither extended-properties marker.
+ */
+fun buildGooglePlainWrite(title: String, start: Instant, end: Instant) = GoogleEventWriteDto(
+    summary = title,
+    start = GoogleEventDateTime(dateTime = start.toString()),
+    end = GoogleEventDateTime(dateTime = end.toString()),
+)
+
 private fun parseGoogleInstant(
     dateTime: app.ilecto.agenda.core.network.google.GoogleEventDateTime?,
     isAllDay: Boolean,
@@ -113,4 +123,11 @@ fun buildGraphMirrorWrite(
         GraphSingleValueExtendedPropertyDto(id = GRAPH_SOURCE_KEY_PROPERTY_ID, value = sourceKey),
         GraphSingleValueExtendedPropertyDto(id = GRAPH_RULE_ID_PROPERTY_ID, value = ruleId),
     ),
+)
+
+/** Graph equivalent of [buildGooglePlainWrite]. */
+fun buildGraphPlainWrite(title: String, start: Instant, end: Instant) = GraphEventWriteDto(
+    subject = title,
+    start = GraphDateTimeDto(dateTime = LocalDateTime.ofInstant(start, ZoneOffset.UTC).toString(), timeZone = "UTC"),
+    end = GraphDateTimeDto(dateTime = LocalDateTime.ofInstant(end, ZoneOffset.UTC).toString(), timeZone = "UTC"),
 )

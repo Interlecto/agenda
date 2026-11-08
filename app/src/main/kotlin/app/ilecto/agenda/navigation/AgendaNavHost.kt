@@ -10,11 +10,13 @@ import app.ilecto.agenda.feature.auth.navigation.AUTH_ROUTE
 import app.ilecto.agenda.feature.auth.navigation.authScreen
 import app.ilecto.agenda.feature.calendar.navigation.CALENDAR_ROUTE
 import app.ilecto.agenda.feature.calendar.navigation.calendarScreen
+import app.ilecto.agenda.feature.mail.navigation.MAIL_ROUTE
+import app.ilecto.agenda.feature.mail.navigation.mailSuggestionsScreen
 import app.ilecto.agenda.feature.sync.navigation.SYNC_ROUTE
 import app.ilecto.agenda.feature.sync.navigation.syncRulesScreen
 
-// Phase 3+ TODO: add the placeholder feature:mail/planner/activitylog/reports graphs here as
-// each phase lands.
+// Phase 4+ TODO: add the placeholder feature:planner/activitylog/reports graphs here as each
+// phase lands.
 @Composable
 fun AgendaNavHost(viewModel: AppStartViewModel = hiltViewModel()) {
     val hasLinkedAccounts by viewModel.hasLinkedAccounts.collectAsStateWithLifecycle()
@@ -28,7 +30,11 @@ fun AgendaNavHost(viewModel: AppStartViewModel = hiltViewModel()) {
         startDestination = if (startDestination) CALENDAR_ROUTE else AUTH_ROUTE,
     ) {
         authScreen(onContinueToCalendar = { navController.navigate(CALENDAR_ROUTE) })
-        calendarScreen(onOpenSyncRules = { navController.navigate(SYNC_ROUTE) })
+        calendarScreen(
+            onOpenSyncRules = { navController.navigate(SYNC_ROUTE) },
+            onOpenMailSuggestions = { navController.navigate(MAIL_ROUTE) },
+        )
         syncRulesScreen()
+        mailSuggestionsScreen()
     }
 }

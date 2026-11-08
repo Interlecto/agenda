@@ -63,6 +63,20 @@ interface OutlookGraphApi {
         @Path("calendarId") calendarId: String,
         @Path("eventId") eventId: String,
     ): Response<Unit>
+
+    /**
+     * Phase 3: recent messages for the mail scanner, called with a `Mail.Read`-scoped token.
+     * [filter] and [orderby] both reference `receivedDateTime` — required together, or Graph
+     * rejects the combination as an "inefficient filter".
+     */
+    @GET("v1.0/me/messages")
+    suspend fun listMessages(
+        @Header("Authorization") authorization: String,
+        @Query("\$filter") filter: String,
+        @Query("\$select") select: String = "id,subject,receivedDateTime,bodyPreview",
+        @Query("\$orderby") orderby: String = "receivedDateTime desc",
+        @Query("\$top") top: Int = 25,
+    ): GraphMessagesListResponse
 }
 
 private const val EXTENDED_PROPERTIES_EXPAND =

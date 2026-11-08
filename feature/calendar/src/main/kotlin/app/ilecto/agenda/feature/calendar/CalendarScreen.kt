@@ -37,6 +37,7 @@ import java.time.format.FormatStyle
 @Composable
 fun CalendarRoute(
     onOpenSyncRules: () -> Unit,
+    onOpenMailSuggestions: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel = hiltViewModel(),
 ) {
@@ -63,6 +64,7 @@ fun CalendarRoute(
         onRefresh = { activity?.let(viewModel::refresh) },
         onDismissError = viewModel::dismissError,
         onOpenSyncRules = onOpenSyncRules,
+        onOpenMailSuggestions = onOpenMailSuggestions,
         modifier = modifier,
     )
 }
@@ -76,6 +78,7 @@ private fun CalendarScreen(
     onRefresh: () -> Unit,
     onDismissError: () -> Unit,
     onOpenSyncRules: () -> Unit,
+    onOpenMailSuggestions: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val accountsById = remember(accounts) { accounts.associateBy { it.id } }
@@ -92,6 +95,7 @@ private fun CalendarScreen(
         ) {
             Text(text = "Agenda", style = MaterialTheme.typography.headlineSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = onOpenMailSuggestions) { Text("Mail suggestions") }
                 TextButton(onClick = onOpenSyncRules) { Text("Sync rules") }
                 OutlinedButton(onClick = onRefresh, enabled = !isRefreshing) {
                     Text(if (isRefreshing) "Refreshing…" else "Refresh")

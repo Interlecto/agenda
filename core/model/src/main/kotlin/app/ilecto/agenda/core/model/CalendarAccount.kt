@@ -14,4 +14,7 @@ data class CalendarAccount(
     // Google: the signed-in account's email, used to re-request the Calendar scope later.
     // Outlook: MSAL's homeAccountId, used with acquireTokenSilent/getAccount later.
     val authRef: String,
+    // Phase 3: whether the user has granted the separate mail-readonly scope and opted into
+    // mail scanning for this account.
+    val mailScanEnabled: Boolean,
 )

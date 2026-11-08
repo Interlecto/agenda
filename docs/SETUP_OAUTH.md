@@ -1,4 +1,4 @@
-# Setting up OAuth credentials (Phase 1 + Phase 2)
+# Setting up OAuth credentials (Phase 1 + Phase 2 + Phase 3)
 
 Agenda talks to Google Calendar and Microsoft Graph directly from the device — there is no
 backend. Both require an app registration that only you can create (they're tied to your own
@@ -24,7 +24,9 @@ API). This is a genuine Google quirk, not a mistake: the client *type* each API 
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a project (or
    reuse one).
-2. **APIs & Services → Library** → enable **Google Calendar API**.
+2. **APIs & Services → Library** → enable **Google Calendar API**, and **Gmail API** too if you
+   want to try Phase 3's mail-scanning (optional — the app works fine without it, just without
+   that feature).
 3. **APIs & Services → Credentials → Create Credentials → OAuth client ID** →
    **Android** — package name `app.ilecto.agenda`, SHA-1 fingerprint the one above. This is
    what lets `AuthorizationClient` grant the Calendar scope; its client ID never appears in
@@ -37,10 +39,12 @@ API). This is a genuine Google quirk, not a mistake: the client *type* each API 
    add your own Google account as a test user if the app is in "Testing" publishing status).
    Calendar scopes are "restricted/sensitive," so Google also requires you to explicitly add
    both scopes under the consent screen's **Data access → Add or remove scopes** step, even
-   while the app is in Testing: `.../auth/calendar.readonly` (Phase 1, read) and
+   while the app is in Testing: `.../auth/calendar.readonly` (Phase 1, read),
    `.../auth/calendar.events` (Phase 2, write — lets the sync engine create the redacted "busy"
-   blocks on a target calendar) — otherwise `AuthorizationClient` will fail to grant them to
-   your test account.
+   blocks on a target calendar), and, only if you enabled the Gmail API above,
+   `.../auth/gmail.readonly` (Phase 3 — requested separately, per account, only when you turn on
+   mail scanning for that account in the app, not at sign-in time) — otherwise
+   `AuthorizationClient` will fail to grant them to your test account.
 6. Copy the **Web** client's ID (looks like `1234567890-abc123.apps.googleusercontent.com`)
    into `local.properties`:
    ```
@@ -61,8 +65,10 @@ API). This is a genuine Google quirk, not a mistake: the client *type* each API 
 4. **API permissions → Add a permission → Microsoft Graph → Delegated permissions** → add
    `Calendars.ReadWrite` (Phase 2's sync engine needs write access to create/update/delete the
    redacted "busy" blocks it mirrors onto a target calendar; this supersedes the Phase 1
-   `Calendars.Read` permission — remove the old one if you added it separately). Grant admin
-   consent if your tenant requires it (personal/consumer sign-in doesn't need this step).
+   `Calendars.Read` permission — remove the old one if you added it separately), and, if you
+   want to try Phase 3's mail-scanning, `Mail.Read` too (also requested separately, per account,
+   only when you turn on mail scanning for that account in the app). Grant admin consent if your
+   tenant requires it (personal/consumer sign-in doesn't need this step).
 5. Copy the **Application (client) ID** from the registration's Overview page into
    `local.properties`:
    ```
@@ -90,3 +96,7 @@ Phase 2 widens both providers' requested scopes (Google adds `calendar.events`; 
 holds the old, narrower grant. **Unlink and relink it** from the app's account list — that
 re-runs the consent flow and picks up the new scope. Leaving it linked will surface as a "please
 reconnect this account" error the next time the sync engine or a refresh needs a token for it.
+
+Phase 3's `gmail.readonly`/`Mail.Read` scope is different: it's requested separately, the first
+time you turn on mail scanning for a given account in the app, not at sign-in/relink time — no
+action needed here unless you actually try that feature.

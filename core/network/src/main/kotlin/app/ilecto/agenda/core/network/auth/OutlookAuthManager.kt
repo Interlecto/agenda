@@ -27,6 +27,10 @@ import kotlin.coroutines.resumeWithException
 // Google does).
 private val CALENDAR_READ_WRITE_SCOPE = arrayOf("Calendars.ReadWrite")
 
+// Phase 3: a separate, opt-in grant — requested only when the user turns on mail scanning for
+// an account, not bundled into the Calendar scope above (incremental authorization).
+private val MAIL_READ_SCOPE = arrayOf("Mail.Read")
+
 data class MsalIdentity(val homeAccountId: String, val username: String)
 
 /**
@@ -49,12 +53,51 @@ class OutlookAuthManager @Inject constructor(
             ).also { client = it }
         }
 
-    suspend fun signIn(activity: Activity): AppResult<MsalIdentity> = try {
+    suspend fun signIn(activity: Activity): AppResult<MsalIdentity> {
         val app = client()
+        return when (
+            val result = acquireTokenInteractive(app) {
+                startAuthorizationFromActivity(activity).withScopes(CALENDAR_READ_WRITE_SCOPE.toList())
+            }
+        ) {
+            is AppResult.Success ->
+                AppResult.Success(MsalIdentity(homeAccountId = result.data.account.id, username = result.data.account.username))
+            is AppResult.Error -> result
+        }
+    }
+
+    suspend fun acquireTokenSilent(homeAccountId: String): AppResult<String> =
+        acquireSilent(homeAccountId, CALENDAR_READ_WRITE_SCOPE.toList())
+
+    /**
+     * Phase 3: requests the Mail.Read scope for an *already-linked* account, independently of
+     * [signIn] — see [MAIL_READ_SCOPE]'s doc comment. Shows a consent screen scoped to that one
+     * account rather than a new account picker.
+     */
+    suspend fun requestMailAccess(activity: Activity, homeAccountId: String): AppResult<Unit> {
+        val app = client()
+        val account = withContext(Dispatchers.IO) { app.getAccount(homeAccountId) }
+            ?: return AppResult.Error(IllegalStateException("Outlook account is no longer cached on this device; reconnect it"))
+        return when (
+            val result = acquireTokenInteractive(app) {
+                startAuthorizationFromActivity(activity).forAccount(account).withScopes(MAIL_READ_SCOPE.toList())
+            }
+        ) {
+            is AppResult.Success -> AppResult.Success(Unit)
+            is AppResult.Error -> result
+        }
+    }
+
+    suspend fun acquireMailTokenSilent(homeAccountId: String): AppResult<String> =
+        acquireSilent(homeAccountId, MAIL_READ_SCOPE.toList())
+
+    private suspend fun acquireTokenInteractive(
+        app: IMultipleAccountPublicClientApplication,
+        configure: AcquireTokenParameters.Builder.() -> AcquireTokenParameters.Builder,
+    ): AppResult<IAuthenticationResult> = try {
         val result = suspendCancellableCoroutine<IAuthenticationResult> { continuation ->
             val parameters = AcquireTokenParameters.Builder()
-                .startAuthorizationFromActivity(activity)
-                .withScopes(CALENDAR_READ_WRITE_SCOPE.toList())
+                .configure()
                 .withCallback(object : AuthenticationCallback {
                     override fun onSuccess(authenticationResult: IAuthenticationResult) {
                         continuation.resume(authenticationResult)
@@ -71,12 +114,12 @@ class OutlookAuthManager @Inject constructor(
                 .build()
             app.acquireToken(parameters)
         }
-        AppResult.Success(MsalIdentity(homeAccountId = result.account.id, username = result.account.username))
+        AppResult.Success(result)
     } catch (e: Exception) {
         AppResult.Error(e)
     }
 
-    suspend fun acquireTokenSilent(homeAccountId: String): AppResult<String> = try {
+    private suspend fun acquireSilent(homeAccountId: String, scopes: List<String>): AppResult<String> = try {
         withContext(Dispatchers.IO) {
             val app = client()
             val account: IAccount? = app.getAccount(homeAccountId)
@@ -86,7 +129,7 @@ class OutlookAuthManager @Inject constructor(
                 val authority = app.configuration.defaultAuthority.authorityURL.toString()
                 val parameters = AcquireTokenSilentParameters.Builder()
                     .forAccount(account)
-                    .withScopes(CALENDAR_READ_WRITE_SCOPE.toList())
+                    .withScopes(scopes)
                     .fromAuthority(authority)
                     .build()
                 val result = app.acquireTokenSilent(parameters)

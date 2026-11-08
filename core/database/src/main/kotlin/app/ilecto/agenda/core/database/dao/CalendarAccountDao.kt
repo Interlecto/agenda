@@ -21,4 +21,7 @@ interface CalendarAccountDao {
 
     @Query("DELETE FROM calendar_accounts WHERE id = :accountId")
     suspend fun deleteById(accountId: String)
+
+    @Query("UPDATE calendar_accounts SET mailScanEnabled = :enabled WHERE id = :accountId")
+    suspend fun updateMailScanEnabled(accountId: String, enabled: Boolean)
 }

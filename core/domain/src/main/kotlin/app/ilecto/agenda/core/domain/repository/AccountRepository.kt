@@ -15,4 +15,7 @@ interface AccountRepository {
     suspend fun saveLinkedAccount(account: CalendarAccount): AppResult<Unit>
 
     suspend fun unlinkAccount(accountId: String): AppResult<Unit>
+
+    /** Phase 3: toggles whether the mail scanner runs for this account. */
+    suspend fun setMailScanEnabled(accountId: String, enabled: Boolean): AppResult<Unit>
 }

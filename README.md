@@ -24,16 +24,18 @@ MVP desirable: blocking.
 
 ## Project status
 
-Phase 0 (project skeleton) is done. Phase 1 (MVP: unified read-only view) and Phase 2
-(cross-calendar blocking) are both implemented — Google (Credential Manager + Play Services
-Authorization API) and Outlook (MSAL, personal + work/school accounts) sign-in, real Google
-Calendar / Microsoft Graph API calls (read *and* write), a local Room cache, a merged
-color-coded agenda view, and a sync-rule editor that mirrors matching events onto another
-calendar as a redacted "busy" block, reconciled on pull-to-refresh and by a 15-minute
-WorkManager background job — but untested against real OAuth credentials: see
-**[docs/SETUP_OAUTH.md](docs/SETUP_OAUTH.md)** to fill those in and actually try it. If you
+Phase 0 (project skeleton), Phase 1 (MVP: unified read-only view), Phase 2 (cross-calendar
+blocking) and Phase 3 (email-derived events) are all implemented — Google (Credential Manager +
+Play Services Authorization API) and Outlook (MSAL, personal + work/school accounts) sign-in,
+real Google Calendar / Microsoft Graph API calls (read *and* write), a local Room cache, a
+merged color-coded agenda view, a sync-rule editor that mirrors matching events onto another
+calendar as a redacted "busy" block, and a mail-suggestions inbox that scans opted-in accounts
+for candidate appointment/deadline emails via local, on-device heuristics (no NLP/LLM) and lets
+you add a match to any linked calendar in one tap — but untested against real OAuth credentials:
+see **[docs/SETUP_OAUTH.md](docs/SETUP_OAUTH.md)** to fill those in and actually try it. If you
 linked a test account under Phase 1, it needs to be unlinked and relinked to pick up Phase 2's
-wider scopes — see that doc's last section.
+wider scopes (see that doc's "If you already linked a test account" section); Phase 3's mail
+scope is separate and opt-in per account, no relinking needed.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full phase-by-phase plan and architecture notes.
 
@@ -53,7 +55,7 @@ core/designsystem/   Compose theme + shared composables
 feature/auth/        sign-in (Phase 1)
 feature/calendar/    unified calendar view (Phase 1)
 feature/sync/        cross-calendar blocking rule editor (Phase 2)
-feature/mail/        email-derived events (Phase 3, placeholder)
+feature/mail/        email-derived event suggestions (Phase 3)
 feature/planner/     projects & tasks (Phase 4, placeholder)
 feature/activitylog/ activity tracking (Phase 5, placeholder)
 feature/reports/     filtered reports (Phase 6, placeholder)
@@ -65,7 +67,8 @@ ios/                 iOS port placeholder (Phase 8)
 1. Copy `local.properties.example` to `local.properties` and set `sdk.dir` to your Android SDK path.
    The app builds and runs without OAuth credentials filled in — see
    **[docs/SETUP_OAUTH.md](docs/SETUP_OAUTH.md)** for how to get a real Google/Outlook sign-in
-   working, including the write scopes Phase 2's sync engine needs.
+   working, including the write scopes Phase 2's sync engine needs and the optional mail scopes
+   Phase 3's suggestion inbox needs.
 2. `./gradlew assembleDebug` to build, or open the project root in Android Studio.
 3. Dependency versions in `gradle/libs.versions.toml` were checked live against Maven/Google
    metadata on 2026-10-26 (not just the assistant's training data) — still worth a refresh if

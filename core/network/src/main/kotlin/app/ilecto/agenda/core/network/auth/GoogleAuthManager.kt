@@ -33,6 +33,11 @@ private val CALENDAR_READONLY_SCOPE = Scope("https://www.googleapis.com/auth/cal
 // creation/deletion we never need.
 private val CALENDAR_EVENTS_SCOPE = Scope("https://www.googleapis.com/auth/calendar.events")
 
+// Phase 3: a separate, opt-in grant — requested only when the user turns on mail scanning for
+// an account, not bundled into the Calendar scopes above (incremental authorization: never ask
+// for a scope before the feature needing it is actually used).
+private val GMAIL_READONLY_SCOPE = Scope("https://www.googleapis.com/auth/gmail.readonly")
+
 /**
  * Wraps Credential Manager (identity/sign-in) and the Play Services Authorization API
  * (Calendar scope access) — two separate Google APIs with two separate OAuth client
@@ -77,10 +82,23 @@ class GoogleAuthManager @Inject constructor() {
     suspend fun requestCalendarAccess(
         context: Context,
         launchConsent: suspend (IntentSenderRequest) -> Intent?,
+    ): AppResult<String> = authorize(context, listOf(CALENDAR_READONLY_SCOPE, CALENDAR_EVENTS_SCOPE), launchConsent)
+
+    /**
+     * Phase 3: requests the Gmail readonly scope, independently of [requestCalendarAccess] — see
+     * [GMAIL_READONLY_SCOPE]'s doc comment. Same resolution/token shape otherwise.
+     */
+    suspend fun requestMailAccess(
+        context: Context,
+        launchConsent: suspend (IntentSenderRequest) -> Intent?,
+    ): AppResult<String> = authorize(context, listOf(GMAIL_READONLY_SCOPE), launchConsent)
+
+    private suspend fun authorize(
+        context: Context,
+        scopes: List<Scope>,
+        launchConsent: suspend (IntentSenderRequest) -> Intent?,
     ): AppResult<String> = try {
-        val request = AuthorizationRequest.builder()
-            .setRequestedScopes(listOf(CALENDAR_READONLY_SCOPE, CALENDAR_EVENTS_SCOPE))
-            .build()
+        val request = AuthorizationRequest.builder().setRequestedScopes(scopes).build()
         var result = Identity.getAuthorizationClient(context).authorize(request).await()
         if (result.hasResolution()) {
             val pendingIntent = result.pendingIntent
@@ -88,7 +106,7 @@ class GoogleAuthManager @Inject constructor() {
                     IllegalStateException("Authorization needs a resolution but returned no PendingIntent"),
                 )
             val data = launchConsent(IntentSenderRequest.Builder(pendingIntent.intentSender).build())
-                ?: return AppResult.Error(IllegalStateException("Calendar access consent was not granted"))
+                ?: return AppResult.Error(IllegalStateException("Access consent was not granted"))
             result = Identity.getAuthorizationClient(context).getAuthorizationResultFromIntent(data)
         }
         val token = result.accessToken

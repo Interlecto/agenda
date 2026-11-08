@@ -2,6 +2,8 @@ package app.ilecto.agenda.core.data.repository
 
 import android.content.Context
 import app.ilecto.agenda.core.common.AppResult
+import app.ilecto.agenda.core.data.mapper.buildGooglePlainWrite
+import app.ilecto.agenda.core.data.mapper.buildGraphPlainWrite
 import app.ilecto.agenda.core.data.mapper.toDomain
 import app.ilecto.agenda.core.data.mapper.toEntity
 import app.ilecto.agenda.core.database.dao.AccountCalendarDao
@@ -57,6 +59,61 @@ class CalendarRepositoryImpl @Inject constructor(
         }
 
         return failure?.let { AppResult.Error(it) } ?: AppResult.Success(Unit)
+    }
+
+    override suspend fun createEvent(
+        context: Context,
+        accountId: String,
+        calendarId: String,
+        title: String,
+        start: Instant,
+        end: Instant,
+        isAllDay: Boolean,
+    ): AppResult<Unit> {
+        val accountEntity = accountDao.observeAll().first().find { it.id == accountId }
+            ?: return AppResult.Error(IllegalStateException("Account $accountId is no longer linked"))
+        val tokenResult = tokenProviderFactory.forProvider(accountEntity.provider)
+            .getAccessToken(context, accountEntity.authRef)
+        val token = when (tokenResult) {
+            is AppResult.Success -> tokenResult.data
+            is AppResult.Error -> return AppResult.Error(tokenResult.throwable)
+        }
+        val authorization = "Bearer $token"
+
+        return try {
+            val remoteId = when (accountEntity.provider) {
+                CalendarProvider.GOOGLE -> googleCalendarApi.insertEvent(
+                    authorization = authorization,
+                    calendarId = calendarId,
+                    event = buildGooglePlainWrite(title, start, end),
+                ).id
+                CalendarProvider.OUTLOOK -> outlookGraphApi.createEvent(
+                    authorization = authorization,
+                    calendarId = calendarId,
+                    event = buildGraphPlainWrite(title, start, end),
+                ).id
+            }
+            eventDao.upsertAll(
+                listOf(
+                    CalendarEventEntity(
+                        id = remoteId,
+                        accountId = accountId,
+                        calendarId = calendarId,
+                        title = title,
+                        description = null,
+                        location = null,
+                        start = start,
+                        end = end,
+                        isAllDay = isAllDay,
+                        mirroredFromEventId = null,
+                        mirroredByRuleId = null,
+                    ),
+                ),
+            )
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(e)
+        }
     }
 
     private suspend fun refreshAccount(

@@ -2,6 +2,7 @@ package app.ilecto.agenda.core.database
 
 import androidx.room.TypeConverter
 import app.ilecto.agenda.core.model.CalendarProvider
+import app.ilecto.agenda.core.model.SuggestionStatus
 import java.time.Instant
 
 class Converters {
@@ -16,4 +17,10 @@ class Converters {
 
     @TypeConverter
     fun nameToProvider(value: String?): CalendarProvider? = value?.let(CalendarProvider::valueOf)
+
+    @TypeConverter
+    fun statusToName(value: SuggestionStatus?): String? = value?.name
+
+    @TypeConverter
+    fun nameToStatus(value: String?): SuggestionStatus? = value?.let(SuggestionStatus::valueOf)
 }

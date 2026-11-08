@@ -1,5 +1,6 @@
 package app.ilecto.agenda.core.network.di
 
+import app.ilecto.agenda.core.network.google.GmailApi
 import app.ilecto.agenda.core.network.google.GoogleCalendarApi
 import app.ilecto.agenda.core.network.outlook.OutlookGraphApi
 import dagger.Module
@@ -23,6 +24,12 @@ annotation class GoogleRetrofit
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class OutlookRetrofit
+
+// Gmail lives on a different host (gmail.googleapis.com) than Calendar (www.googleapis.com),
+// so it needs its own Retrofit instance/qualifier rather than reusing @GoogleRetrofit.
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class GmailRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -61,9 +68,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @GmailRetrofit
+    fun provideGmailRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
+        .baseUrl("https://gmail.googleapis.com/")
+        .client(okHttpClient)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
+
+    @Provides
+    @Singleton
     fun provideGoogleCalendarApi(@GoogleRetrofit retrofit: Retrofit): GoogleCalendarApi = retrofit.create()
 
     @Provides
     @Singleton
     fun provideOutlookGraphApi(@OutlookRetrofit retrofit: Retrofit): OutlookGraphApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideGmailApi(@GmailRetrofit retrofit: Retrofit): GmailApi = retrofit.create()
 }

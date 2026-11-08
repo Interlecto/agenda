@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:calendar"))
     implementation(project(":feature:sync"))
+    implementation(project(":feature:mail"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

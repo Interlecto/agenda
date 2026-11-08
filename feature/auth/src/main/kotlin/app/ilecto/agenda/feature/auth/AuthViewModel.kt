@@ -70,6 +70,7 @@ class AuthViewModel @Inject constructor(
                 isCorporate = isLikelyWorkspace,
                 colorArgb = defaultColorFor(CalendarProvider.GOOGLE, isLikelyWorkspace),
                 authRef = identity.email,
+                mailScanEnabled = false,
             )
             save(account)
         }
@@ -93,6 +94,7 @@ class AuthViewModel @Inject constructor(
                 isCorporate = isCorporate,
                 colorArgb = defaultColorFor(CalendarProvider.OUTLOOK, isCorporate),
                 authRef = identity.homeAccountId,
+                mailScanEnabled = false,
             )
             save(account)
         }

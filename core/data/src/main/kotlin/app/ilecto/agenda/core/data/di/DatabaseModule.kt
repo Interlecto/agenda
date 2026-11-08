@@ -6,6 +6,7 @@ import app.ilecto.agenda.core.database.AgendaDatabase
 import app.ilecto.agenda.core.database.dao.AccountCalendarDao
 import app.ilecto.agenda.core.database.dao.CalendarAccountDao
 import app.ilecto.agenda.core.database.dao.CalendarEventDao
+import app.ilecto.agenda.core.database.dao.MailSuggestionDao
 import app.ilecto.agenda.core.database.dao.SyncRuleDao
 import dagger.Module
 import dagger.Provides
@@ -42,4 +43,8 @@ object DatabaseModule {
     @Provides
     fun provideAccountCalendarDao(database: AgendaDatabase): AccountCalendarDao =
         database.accountCalendarDao()
+
+    @Provides
+    fun provideMailSuggestionDao(database: AgendaDatabase): MailSuggestionDao =
+        database.mailSuggestionDao()
 }

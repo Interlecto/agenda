@@ -6,6 +6,8 @@ import app.ilecto.agenda.feature.calendar.CalendarRoute
 
 const val CALENDAR_ROUTE = "calendar"
 
-fun NavGraphBuilder.calendarScreen(onOpenSyncRules: () -> Unit) {
-    composable(CALENDAR_ROUTE) { CalendarRoute(onOpenSyncRules = onOpenSyncRules) }
+fun NavGraphBuilder.calendarScreen(onOpenSyncRules: () -> Unit, onOpenMailSuggestions: () -> Unit) {
+    composable(CALENDAR_ROUTE) {
+        CalendarRoute(onOpenSyncRules = onOpenSyncRules, onOpenMailSuggestions = onOpenMailSuggestions)
+    }
 }

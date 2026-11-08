@@ -30,4 +30,11 @@ class AccountRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         AppResult.Error(e)
     }
+
+    override suspend fun setMailScanEnabled(accountId: String, enabled: Boolean): AppResult<Unit> = try {
+        accountDao.updateMailScanEnabled(accountId, enabled)
+        AppResult.Success(Unit)
+    } catch (e: Exception) {
+        AppResult.Error(e)
+    }
 }

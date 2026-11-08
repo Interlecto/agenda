@@ -18,4 +18,18 @@ interface CalendarRepository {
     fun observeEvents(from: Instant, to: Instant): Flow<List<CalendarEvent>>
 
     suspend fun refresh(context: Context): AppResult<Unit>
+
+    /**
+     * Phase 3: writes a plain, unmarked event directly to [accountId]'s [calendarId] — used by
+     * the mail-suggestion accept flow. Not a Phase 2 mirror, so it carries no sync marker.
+     */
+    suspend fun createEvent(
+        context: Context,
+        accountId: String,
+        calendarId: String,
+        title: String,
+        start: Instant,
+        end: Instant,
+        isAllDay: Boolean,
+    ): AppResult<Unit>
 }
